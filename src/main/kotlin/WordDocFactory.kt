@@ -14,6 +14,7 @@ class WordDocFactory(
     private val year: Int
 ) {
     private val document = XWPFDocument()
+    private val defaultFont = "Calibri"
 
     fun addFooter() {
         document.createHeaderFooterPolicy()
@@ -22,6 +23,7 @@ class WordDocFactory(
             .createRun().apply {
                 isBold = true
                 fontSize = 11
+                fontFamily = defaultFont
                 setText("No goods or services provided in exchange by the Church.")
             }
     }
@@ -33,6 +35,7 @@ class WordDocFactory(
             createRun().apply {
                 isBold = true
                 fontSize = 15
+                fontFamily = defaultFont
                 setText(name)
                 addCarriageReturn()
                 setText("January through December $year Contribution Acknowledgement")
@@ -82,6 +85,7 @@ class WordDocFactory(
             createRun().apply {
                 isBold = true
                 fontSize = 11
+                fontFamily = defaultFont
                 setText(text)
             }
         }
@@ -93,6 +97,7 @@ class WordDocFactory(
             this.alignment = alignment
             createRun().apply {
                 fontSize = 11
+                fontFamily = defaultFont
                 setText(text)
             }
         }

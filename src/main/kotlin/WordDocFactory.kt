@@ -1,16 +1,16 @@
-import org.apache.poi.ss.usermodel.Color
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy
-import org.apache.poi.xwpf.usermodel.*
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment
+import org.apache.poi.xwpf.usermodel.XWPFDocument
+import org.apache.poi.xwpf.usermodel.XWPFTable
+import org.apache.poi.xwpf.usermodel.XWPFTableCell
 import java.io.File
-
 import java.io.FileOutputStream
 import java.math.BigDecimal
-
 
 class WordDocFactory(
     private val name: String = "Grace Faith Chinese Church",
     private val fein: String = "82-4202503",
+    private val abbreviation: String = "GFCC",
     private val year: Int
 ) {
     private val document = XWPFDocument()
@@ -72,7 +72,7 @@ class WordDocFactory(
     }
 
     fun writeToFile() {
-        val out = FileOutputStream(File("doc.docx"))
+        val out = FileOutputStream(File("${abbreviation}_contribution_acknowledgement_${year}.docx"))
         document.write(out)
         out.close()
         println("docx written successfully")

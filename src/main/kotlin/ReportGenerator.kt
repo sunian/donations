@@ -23,19 +23,21 @@ object ReportGenerator {
         val filter = scanner.nextLine().uppercase()
         addDonationsFromCSV("donations - check GFCC.csv", Donation.Type.CHECK)
         addDonationsFromCSV("donations - cash GFCC.csv", Donation.Type.CASH)
-        val donationsByName = if (filter == "ALL") {
-            donationsByName
-        } else if (filter.startsWith(">")) {
-            val num = filter.substring(1).toInt()
-            donationsByName.filterValues { it.size > num }
-        } else if (filter.startsWith("<")) {
-            val num = filter.substring(1).toInt()
-            donationsByName.filterValues { it.size < num }
-        } else if (filter.startsWith("=")) {
-            val num = filter.substring(1).toInt()
-            donationsByName.filterValues { it.size == num }
-        } else {
-            throw IllegalArgumentException("Invalid filter type: $filter")
+        val donationsByName = when {
+            filter == "ALL" -> donationsByName
+            filter.startsWith(">") -> {
+                val num = filter.substring(1).toInt()
+                donationsByName.filterValues { it.size > num }
+            }
+            filter.startsWith("<") -> {
+                val num = filter.substring(1).toInt()
+                donationsByName.filterValues { it.size < num }
+            }
+            filter.startsWith("=") -> {
+                val num = filter.substring(1).toInt()
+                donationsByName.filterValues { it.size == num }
+            }
+            else -> throw IllegalArgumentException("Invalid filter type: $filter")
         }
         when (reportType) {
             "I" -> {

@@ -16,15 +16,52 @@ object ReportGenerator {
     fun main(args: Array<String>) {
         val scanner = Scanner(System.`in`)
         print("Please enter the desired year: ")
-        year = scanner.nextInt()
+        year = scanner.nextLine().toInt()
+        print("Would you like individual reports or a batch report? (I/B): ")
+        val reportType = scanner.nextLine().uppercase()
+        print("Would you like to filter people by donation count? (ALL/>#/<#/=#): ")
+        val filter = scanner.nextLine().uppercase()
         addDonationsFromCSV("donations - check GFCC.csv", Donation.Type.CHECK)
         addDonationsFromCSV("donations - cash GFCC.csv", Donation.Type.CASH)
-        WordDocFactory(year = year).apply {
-            addFooter()
-            donationsByName.keys.toList().sorted().forEach {
-                addReport(donationsByName[it]!!.sorted())
+        val donationsByName = if (filter == "ALL") {
+            donationsByName
+        } else if (filter.startsWith(">")) {
+            val num = filter.substring(1).toInt()
+            donationsByName.filterValues { it.size > num }
+        } else if (filter.startsWith("<")) {
+            val num = filter.substring(1).toInt()
+            donationsByName.filterValues { it.size < num }
+        } else if (filter.startsWith("=")) {
+            val num = filter.substring(1).toInt()
+            donationsByName.filterValues { it.size == num }
+        } else {
+            throw IllegalArgumentException("Invalid filter type: $filter")
+        }
+        when (reportType) {
+            "I" -> {
+                donationsByName.forEach { (name, donations) ->
+                    WordDocFactory(year = year, filename = "$name (GFCC $year)").apply {
+                        addFooter()
+                        addReport(donations.sorted())
+                        writeToFile()
+                    }
+                }
             }
-            writeToFile()
+            "B" -> {
+                WordDocFactory(year = year).apply {
+                    addFooter()
+                    donationsByName.keys.toList().sorted().forEachIndexed { index, name ->
+                        addReport(donationsByName[name]!!.sorted())
+                        if (index < donationsByName.size - 1) {
+                            addPageBreak()
+                        }
+                    }
+                    writeToFile()
+                }
+            }
+            else -> {
+                println("Invalid response. Please try again.")
+            }
         }
     }
 

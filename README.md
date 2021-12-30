@@ -5,4 +5,4 @@
     1. One for Cash
 1. Copy the 2 CSVs into the `resources` folder. Make sure the file names match. DO NOT COMMIT these CSVs.
 1. Run the `ReportGenerator` class, and type in the desired year.
-1. Look for a `.docx` file. Open it in Excel or Google Sheets.
+1. Look for a `.docx` file in the `exports` folder. Open it in Excel or Google Sheets.

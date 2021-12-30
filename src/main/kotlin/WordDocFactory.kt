@@ -10,8 +10,8 @@ import java.math.BigDecimal
 class WordDocFactory(
     private val name: String = "Grace Faith Chinese Church",
     private val fein: String = "82-4202503",
-    private val abbreviation: String = "GFCC",
-    private val year: Int
+    private val year: Int,
+    private val filename: String = "GFCC_contribution_acknowledgement_$year",
 ) {
     private val document = XWPFDocument()
     private val defaultFont = "Calibri"
@@ -68,11 +68,15 @@ class WordDocFactory(
                 getCell(2).setBodyText(Donation.CURRENCY_FORMAT.format(total), ParagraphAlignment.RIGHT)
             }
         }
+    }
+
+    fun addPageBreak() {
         document.createParagraph().isPageBreak = true
     }
 
     fun writeToFile() {
-        val out = FileOutputStream(File("${abbreviation}_contribution_acknowledgement_${year}.docx"))
+        File("exports").mkdirs()
+        val out = FileOutputStream(File("exports/$filename.docx"))
         document.write(out)
         out.close()
         println("docx written successfully")

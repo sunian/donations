@@ -5,9 +5,9 @@
     1. One for Cash
 1. Copy the 2 CSVs into the `resources` folder. Make sure the file names match. DO NOT COMMIT these CSVs.
 1. Run the `ReportGenerator` class, and answer the prompts.
-1. Look for the generated `.docx` file(s) in the `exports` folder. 
+1. Look for the generated `.docx` or `.pdf` file(s) in the `exports` folder.
 
-### To batch convert individual docx to pdf
+### To batch convert individual docx to pdf (doesn't work anymore)
 1. Open Google Drive website
 1. Upload all docx files to `Takeout` folder. Using the website, Drive should convert these to Google Doc format.
 1. Open Google Takeout website

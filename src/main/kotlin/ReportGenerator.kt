@@ -23,48 +23,85 @@ object ReportGenerator {
         val filter = scanner.nextLine().uppercase()
         addDonationsFromCSV("donations - check GFCC.csv", Donation.Type.CHECK)
         addDonationsFromCSV("donations - cash GFCC.csv", Donation.Type.CASH)
+        val duplicates = arrayListOf<String>()
+        donationsByName.forEach { (name, list) ->
+            val set = list.map { "${it.date} ${it.amount}" }.toSet()
+            if (list.size != set.size) {
+                duplicates.add("duplicates detected for $name")
+            }
+        }
         val donationsByName = when {
             filter == "ALL" -> donationsByName
             filter.startsWith(">") -> {
                 val num = filter.substring(1).toInt()
                 donationsByName.filterValues { it.size > num }
             }
+
             filter.startsWith("<") -> {
                 val num = filter.substring(1).toInt()
                 donationsByName.filterValues { it.size < num }
             }
+
             filter.startsWith("=") -> {
                 val num = filter.substring(1).toInt()
                 donationsByName.filterValues { it.size == num }
             }
+
             else -> throw IllegalArgumentException("Invalid filter type: $filter")
         }
-        when (reportType) {
-            "I" -> {
-                donationsByName.forEach { (name, donations) ->
-                    WordDocFactory(year = year, filename = "$name (GFCC $year)").apply {
-                        addFooter()
-                        addReport(donations.sorted())
-                        writeToFile()
-                    }
-                }
+        print("Would you like DOCX or PDF format? (D/P): ")
+        val docFactory: DocumentFactoryProvider = when (val format = scanner.nextLine().uppercase()) {
+            "D" -> object : DocumentFactoryProvider {
+                override fun provideDocumentFactory(
+                    name: String,
+                    fein: String,
+                    year: Int,
+                    filename: String
+                ): DocumentFactory = WordDocFactory(name, fein, year, filename)
             }
-            "B" -> {
-                WordDocFactory(year = year).apply {
+
+            "P" -> object : DocumentFactoryProvider {
+                override fun provideDocumentFactory(
+                    name: String,
+                    fein: String,
+                    year: Int,
+                    filename: String
+                ): DocumentFactory = PdfFactory(name, fein, year, filename)
+            }
+
+            else -> throw IllegalArgumentException("Invalid format: $format")
+        }
+
+        when (reportType) {
+            "I" -> donationsByName.forEach { (name, donations) ->
+                docFactory.provideDocumentFactory(year = year, filename = "$name (GFCC $year)").run {
                     addFooter()
-                    donationsByName.keys.toList().sorted().forEachIndexed { index, name ->
-                        addReport(donationsByName[name]!!.sorted())
-                        if (index < donationsByName.size - 1) {
-                            addPageBreak()
-                        }
-                    }
+                    addReport(donations.sorted())
                     writeToFile()
                 }
             }
+
+            "B" -> docFactory.provideDocumentFactory(year = year).run {
+                addFooter()
+                donationsByName.keys.toList().sorted().forEachIndexed { index, name ->
+                    addReport(donationsByName[name]!!.sorted())
+                    if (index < donationsByName.size - 1) {
+                        addPageBreak()
+                    }
+                }
+                writeToFile()
+            }
+
             else -> {
                 println("Invalid response. Please try again.")
+                return
             }
         }
+        println(duplicates.joinToString("\n"))
+//        print("Would you like PDFs as well? (Y/N): ")
+//        when (scanner.nextLine().uppercase()) {
+//            "Y" -> PdfConvertor().convert(docxPaths)
+//        }
     }
 
     private fun addDonationsFromCSV(fileName: String, type: Donation.Type) {

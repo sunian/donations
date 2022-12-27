@@ -8,27 +8,27 @@ import java.io.FileOutputStream
 import java.math.BigDecimal
 
 class WordDocFactory(
-    private val name: String = "Grace Faith Chinese Church",
-    private val fein: String = "82-4202503",
+    private val name: String,
+    private val fein: String,
     private val year: Int,
-    private val filename: String = "GFCC_contribution_acknowledgement_$year",
-) {
+    private val filename: String,
+) : DocumentFactory {
     private val document = XWPFDocument()
-    private val defaultFont = "Calibri"
+    private val defaultFont = Defaults.fontFamily
 
-    fun addFooter() {
+    override fun addFooter() {
         document.createHeaderFooterPolicy()
             .createFooter(XWPFHeaderFooterPolicy.DEFAULT)
             .createParagraph()
             .createRun().apply {
                 isBold = true
-                fontSize = 11
+                fontSize = Defaults.fontSize
                 fontFamily = defaultFont
-                setText("No goods or services provided in exchange by the Church.")
+                setText(Defaults.footerText)
             }
     }
 
-    fun addReport(donations: List<Donation>) {
+    override fun addReport(donations: List<Donation>) {
         document.createParagraph().apply {
             alignment = ParagraphAlignment.CENTER
             spacingBetween = 1.5
@@ -70,16 +70,18 @@ class WordDocFactory(
         }
     }
 
-    fun addPageBreak() {
+    override fun addPageBreak() {
         document.createParagraph().isPageBreak = true
     }
 
-    fun writeToFile() {
-        File("exports").mkdirs()
-        val out = FileOutputStream(File("exports/$filename.docx"))
+    override fun writeToFile(): String {
+        File(Defaults.outputDir).mkdirs()
+        val path = "${Defaults.outputDir}/$filename.docx"
+        val out = FileOutputStream(File(path))
         document.write(out)
         out.close()
         println("docx written successfully")
+        return path
     }
 
     private fun XWPFTableCell.setHeaderText(text: String) {
@@ -88,7 +90,7 @@ class WordDocFactory(
             alignment = ParagraphAlignment.CENTER
             createRun().apply {
                 isBold = true
-                fontSize = 11
+                fontSize = Defaults.fontSize
                 fontFamily = defaultFont
                 setText(text)
             }
@@ -100,7 +102,7 @@ class WordDocFactory(
         addParagraph().apply {
             this.alignment = alignment
             createRun().apply {
-                fontSize = 11
+                fontSize = Defaults.fontSize
                 fontFamily = defaultFont
                 setText(text)
             }

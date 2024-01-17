@@ -12,11 +12,11 @@ class PdfFactory(
 ) : DocumentFactory {
     private val document = Document()
     private val defaultFont = Defaults.fontFamily
-    private val outputPath = "${Defaults.outputDir}/$filename.pdf"
+    private val outputPath = "${Defaults.outputDir}/$year/$filename.pdf"
     private val pdfWriter: PdfWriter
 
     init {
-        File(Defaults.outputDir).mkdirs()
+        File(outputPath).parentFile.mkdirs()
         pdfWriter = PdfWriter.getInstance(document, FileOutputStream(outputPath))
         document.open()
     }

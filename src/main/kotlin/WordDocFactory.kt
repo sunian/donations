@@ -75,8 +75,8 @@ class WordDocFactory(
     }
 
     override fun writeToFile(): String {
-        File(Defaults.outputDir).mkdirs()
-        val path = "${Defaults.outputDir}/$filename.docx"
+        val path = "${Defaults.outputDir}/$year/$filename.docx"
+        File(path).parentFile.mkdirs()
         val out = FileOutputStream(File(path))
         document.write(out)
         out.close()

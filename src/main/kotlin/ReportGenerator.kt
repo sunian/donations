@@ -1,4 +1,5 @@
 import java.io.BufferedReader
+import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
 import java.util.*
@@ -107,7 +108,10 @@ object ReportGenerator {
     private fun addDonationsFromCSV(fileName: String, type: Donation.Type) {
         var bufferedReader: BufferedReader? = null
         try {
-            val inputStream = javaClass.getResourceAsStream(fileName)
+            val inputStream = File(System.getProperty("user.home"))
+                .resolve("Desktop")
+                .resolve(fileName)
+                .inputStream()
             bufferedReader = BufferedReader(InputStreamReader(inputStream))
             val firstLine = bufferedReader.readLine()
             if (firstLine != "Date,Name,Credit") {

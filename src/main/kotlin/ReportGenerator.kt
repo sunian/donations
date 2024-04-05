@@ -22,8 +22,8 @@ object ReportGenerator {
         val reportType = scanner.nextLine().uppercase()
         print("Would you like to filter people by donation count? (ALL/>#/<#/=#): ")
         val filter = scanner.nextLine().uppercase()
-        addDonationsFromCSV("donations - check GFCC.csv", Donation.Type.CHECK)
-        addDonationsFromCSV("donations - cash GFCC.csv", Donation.Type.CASH)
+        addDonationsFromTSV("donations - check GFCC.tsv", Donation.Type.CHECK)
+        addDonationsFromTSV("donations - cash GFCC.tsv", Donation.Type.CASH)
         val duplicates = arrayListOf<String>()
         donationsByName.forEach { (name, list) ->
             val set = list.map { "${it.date} ${it.amount}" }.toSet()
@@ -105,7 +105,7 @@ object ReportGenerator {
 //        }
     }
 
-    private fun addDonationsFromCSV(fileName: String, type: Donation.Type) {
+    private fun addDonationsFromTSV(fileName: String, type: Donation.Type) {
         var bufferedReader: BufferedReader? = null
         try {
             val inputStream = File(System.getProperty("user.home"))
@@ -114,8 +114,8 @@ object ReportGenerator {
                 .inputStream()
             bufferedReader = BufferedReader(InputStreamReader(inputStream))
             val firstLine = bufferedReader.readLine()
-            if (firstLine != "Date,Name,Credit") {
-                throw RuntimeException("first line of CSV '$fileName' should start with column names: Date,Name,Credit")
+            if (!firstLine.startsWith("Date\tName\tCredit")) {
+                throw RuntimeException("first line of TSV '$fileName' should start with column names: Date \\t Name \\t Credit")
             }
             while (true) {
                 val line = bufferedReader.readLine() ?: break

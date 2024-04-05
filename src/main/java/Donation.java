@@ -2,8 +2,6 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Sun on 1/5/2020.
@@ -11,7 +9,6 @@ import java.util.regex.Pattern;
  */
 public class Donation implements Comparable<Donation> {
 
-    public static final Pattern CSV_PATTERN = Pattern.compile("([0-9]+)/([0-9]+)/([0-9]+),\"?([^\"]+)\"?,\"?(\\$[^\"]+)\"?");
     public static final DecimalFormat CURRENCY_FORMAT = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
 
     static {
@@ -44,17 +41,23 @@ public class Donation implements Comparable<Donation> {
     }
 
     /**
-     * [line] should be a line from the CSV. Format is date,name,amount
+     * [line] should be a line from the TSV. Format is date \t name \t amount
      */
     public Donation(String line, Type type) {
         this.type = type;
-        Matcher matcher = CSV_PATTERN.matcher(line);
-        boolean found = matcher.find();
-        this.month = Integer.parseInt(matcher.group(1));
-        this.day = Integer.parseInt(matcher.group(2));
-        this.year = Integer.parseInt(matcher.group(3));
-        this.name = matcher.group(4);
-        this.amount = matcher.group(5);
+        final String[] split = line.split("\t");
+        if (split.length < 3) {
+            throw new IllegalArgumentException("not enough tab separated values:\n" + line);
+        }
+        final String[] date = split[0].split("/");
+        if (date.length != 3) {
+            throw new IllegalArgumentException("invalid date:\n" + split[0]);
+        }
+        this.month = Integer.parseInt(date[0]);
+        this.day = Integer.parseInt(date[1]);
+        this.year = Integer.parseInt(date[2]);
+        this.name = split[1];
+        this.amount = split[2];
     }
 
     public BigDecimal getAmount() {

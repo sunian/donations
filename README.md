@@ -1,11 +1,11 @@
 # donations
 
-1. Export the donations Google Sheet into 2 CSVs
+1. Export the donations Google Sheet into 2 TSVs
     1. One for Checks
     1. One for Cash
-1. These CSVs should be on the Desktop with names 
-   1. `donations - check GFCC.csv`  
-   1. `donations - cash GFCC.csv`
+1. These TSVs should be on the Desktop with names 
+   1. `donations - check GFCC.tsv`  
+   1. `donations - cash GFCC.tsv`
 1. Run the `ReportGenerator` class, and answer the prompts.
 1. Look for the generated `.docx` or `.pdf` file(s) in the `exports` folder.
 

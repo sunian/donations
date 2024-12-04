@@ -6,5 +6,6 @@ object Defaults {
     const val fontSizeF = 11f
     const val outputDir = "exports"
     const val filenamePrefix: String = "GFCC_contribution_acknowledgement_"
+    const val filenamePrefixMonthly: String = "GFCC_monthly_contributors_"
     const val footerText = "No goods or services provided in exchange by the Church."
 }

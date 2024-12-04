@@ -18,7 +18,7 @@ object ReportGenerator {
         val scanner = Scanner(System.`in`)
         print("Please enter the desired year: ")
         year = scanner.nextLine().toInt()
-        print("Would you like individual reports or a batch report? (I/B): ")
+        print("Would you like individual reports, a batch report, or a monthly report? (I/B/M): ")
         val reportType = scanner.nextLine().uppercase()
         print("Would you like to filter people by donation count? (ALL/>#/<#/=#): ")
         val filter = scanner.nextLine().uppercase()
@@ -51,26 +51,19 @@ object ReportGenerator {
             else -> throw IllegalArgumentException("Invalid filter type: $filter")
         }
         print("Would you like DOCX or PDF format? (D/P): ")
-        val docFactory: DocumentFactoryProvider = when (val format = scanner.nextLine().uppercase()) {
-            "D" -> object : DocumentFactoryProvider {
-                override fun provideDocumentFactory(
-                    name: String,
-                    fein: String,
-                    year: Int,
-                    filename: String
-                ): DocumentFactory = WordDocFactory(name, fein, year, filename)
+        val format = scanner.nextLine().uppercase()
+        val docFactory = object : DocumentFactoryProvider {
+            override fun provideDocumentFactory(
+                name: String,
+                fein: String,
+                year: Int,
+                filename: String
+            ): DocumentFactory = when {
+                reportType == "M" -> AggregateReportPdfFactory(name, year, filename)
+                format == "D" -> WordDocFactory(name, fein, year, filename)
+                format == "P" -> PdfFactory(name, fein, year, filename)
+                else -> throw IllegalArgumentException("Invalid format: $format")
             }
-
-            "P" -> object : DocumentFactoryProvider {
-                override fun provideDocumentFactory(
-                    name: String,
-                    fein: String,
-                    year: Int,
-                    filename: String
-                ): DocumentFactory = PdfFactory(name, fein, year, filename)
-            }
-
-            else -> throw IllegalArgumentException("Invalid format: $format")
         }
 
         when (reportType) {
@@ -93,16 +86,22 @@ object ReportGenerator {
                 writeToFile()
             }
 
+            "M" -> docFactory.provideDocumentFactory(
+                year = year,
+                filename = "${Defaults.filenamePrefixMonthly}$year"
+            ).run {
+                donationsByName.keys.toList().sorted().forEach { name ->
+                    addReport(donationsByName[name]!!.sorted())
+                }
+                writeToFile()
+            }
+
             else -> {
                 println("Invalid response. Please try again.")
                 return
             }
         }
         println(duplicates.joinToString("\n"))
-//        print("Would you like PDFs as well? (Y/N): ")
-//        when (scanner.nextLine().uppercase()) {
-//            "Y" -> PdfConvertor().convert(docxPaths)
-//        }
     }
 
     private fun addDonationsFromTSV(fileName: String, type: Donation.Type) {

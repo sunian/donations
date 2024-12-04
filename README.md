@@ -10,7 +10,7 @@
 1. Look for the generated `.docx` or `.pdf` file(s) in the `exports` folder.
 
 ### To generate an executable
-1. run `.\gradlw build`
+1. run `.\gradlew build`
 1. unzip the donations zip file in `build/distributions`
 1. copy the `Readme.txt` into the unzipped `bin` folder
 1. add a shortcut on the Desktop for easy access

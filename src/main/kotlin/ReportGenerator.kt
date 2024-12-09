@@ -50,19 +50,30 @@ object ReportGenerator {
 
             else -> throw IllegalArgumentException("Invalid filter type: $filter")
         }
-        print("Would you like DOCX or PDF format? (D/P): ")
-        val format = scanner.nextLine().uppercase()
         val docFactory = object : DocumentFactoryProvider {
             override fun provideDocumentFactory(
                 name: String,
                 fein: String,
                 year: Int,
                 filename: String
-            ): DocumentFactory = when {
-                reportType == "M" -> AggregateReportPdfFactory(name, year, filename)
-                format == "D" -> WordDocFactory(name, fein, year, filename)
-                format == "P" -> PdfFactory(name, fein, year, filename)
-                else -> throw IllegalArgumentException("Invalid format: $format")
+            ): DocumentFactory = when (reportType) {
+                "M" -> {
+                    print("Would you like TSV or PDF format? (T/P): ")
+                    when (val format = scanner.nextLine().uppercase()) {
+                        "T" -> AggregateReportTsvFactory(year, filename)
+                        "P" -> AggregateReportPdfFactory(name, year, filename)
+                        else -> throw IllegalArgumentException("Invalid format: $format")
+                    }
+                }
+
+                else -> {
+                    print("Would you like DOCX or PDF format? (D/P): ")
+                    when (val format = scanner.nextLine().uppercase()) {
+                        "D" -> WordDocFactory(name, fein, year, filename)
+                        "P" -> PdfFactory(name, fein, year, filename)
+                        else -> throw IllegalArgumentException("Invalid format: $format")
+                    }
+                }
             }
         }
 

@@ -53,7 +53,11 @@ class PdfFactory(
         }
         document.add(Paragraph("\n\n"))
         val table = PdfPTable(3)
-        table.setWidths(intArrayOf(2, 5, 3))
+        if (donations.any { it.name.contains('&') }) {
+            table.setWidths(intArrayOf(2, 7, 3))
+        } else {
+            table.setWidths(intArrayOf(2, 5, 3))
+        }
         val headerFont = FontFactory.getFont(defaultFont, Defaults.fontSizeF, Font.BOLD, BaseColor.BLACK)
         val cellFont = FontFactory.getFont(defaultFont, Defaults.fontSizeF, BaseColor.BLACK)
         table.addCell(

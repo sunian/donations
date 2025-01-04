@@ -56,7 +56,7 @@ public class Donation implements Comparable<Donation> {
         this.month = Integer.parseInt(date[0]);
         this.day = Integer.parseInt(date[1]);
         this.year = Integer.parseInt(date[2]);
-        this.name = split[1];
+        this.name = split[1].replace("\\n", "\n");
         this.amount = split[2];
     }
 

@@ -1,8 +1,8 @@
 interface DocumentFactoryProvider {
     fun provideDocumentFactory(
-        name: String = Defaults.churchName,
-        fein: String = Defaults.fein,
         year: Int,
-        filename: String = "${Defaults.filenamePrefix}$year",
+        name: String = Defaults.churchName(year),
+        fein: String = Defaults.fein,
+        filename: String = "${Defaults.churchAbbrev(year)}${Defaults.filenamePrefix}$year",
     ): DocumentFactory
 }

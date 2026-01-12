@@ -28,7 +28,15 @@ object ReportGenerator {
         donationsByName.forEach { (name, list) ->
             val set = list.map { "${it.date} ${it.amount}" }.toSet()
             if (list.size != set.size) {
-                duplicates.add("duplicates detected for $name")
+                duplicates.add("duplicates detected for [$name]")
+            }
+        }
+        donationsByName.keys.let { names ->
+            names.forEach { name ->
+                val duplicate = names.firstOrNull { it.equals(name, ignoreCase = true) && it != name }
+                if (duplicate != null && duplicate > name) {
+                    duplicates.add("duplicate names [$name] and [$duplicate]")
+                }
             }
         }
         val donationsByName = when {
